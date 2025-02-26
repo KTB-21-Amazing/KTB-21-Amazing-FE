@@ -14,7 +14,9 @@ jobs:
 
       - name: zip 생성
         working-directory: ./
-        run: zip -qq -r $GITHUB_SHA.zip . -x ".git/*" # .git 폴더 제외
+        run: |
+          ls -lah  # 포함된 파일 확인
+          zip -qq -r $GITHUB_SHA.zip . -x ".git/*" # .git 폴더 제외
         shell: bash
 
       - name: AWS configure credentials
