@@ -25,7 +25,7 @@ jobs:
           aws-region: ap-northeast-1
 
       - name: upload to S3
-        run: aws s3 cp --region ap-northeast-1 ./$GITHUB_SHA.zip s3://s3-jsjung-codedeploy/$GITHUB_SHA.zip
+        run: aws s3 cp --region ap-northeast-1 ./$GITHUB_SHA.zip s3:codedeploy-mello///$GITHUB_SHA.zip
       
       - name: deploy with AWS codeDeploy
         run: aws deploy create-deployment
