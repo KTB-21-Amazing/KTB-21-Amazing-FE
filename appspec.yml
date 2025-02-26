@@ -1,7 +1,7 @@
 version: 0.0 # 코드 디플로이 용
 os: linux
 files:
-  - source:  /
+  - source:  .
     destination: /var/www/html
     overwrite: yes
 
