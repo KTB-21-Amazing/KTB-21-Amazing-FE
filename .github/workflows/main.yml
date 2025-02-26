@@ -33,4 +33,3 @@ jobs:
           --deployment-config-name CodeDeployDefault.OneAtATime
           --deployment-group-name codedeploy-fe-mello-group
           --s3-location bucket=codedeploy-mello,bundleType=zip,key=$GITHUB_SHA.zip
-          
