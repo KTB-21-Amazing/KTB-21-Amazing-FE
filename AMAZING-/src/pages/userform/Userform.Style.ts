@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import backgroundImg from '@/assets/images/background.jpg';
+import backgroundImg from '../../assets/images/background.jpg';
 
 export const Background = styled.div`
   width: 100vw;
@@ -10,6 +10,7 @@ export const Background = styled.div`
   background-repeat: no-repeat;
   position: relative;
   display: flex;
+  justify-content: center;
 `;
 
 export const Head = styled.div``;

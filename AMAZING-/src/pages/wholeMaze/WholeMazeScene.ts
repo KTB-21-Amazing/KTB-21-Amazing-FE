@@ -1,7 +1,18 @@
 import Phaser from 'phaser';
+import { getMaze } from './../../api/GameApi';
+
+interface MazeDataProps {
+  width: number;
+  height: number;
+  maze: number[][];
+  userPos: [number, number];
+  npcCnt: number;
+  npcPos: [number, number];
+  exitPos: [number, number];
+} // 반환값
 
 class WholeMazeScene extends Phaser.Scene {
-  private username: string = ''; // 닉네임 저장
+  private mazeData: MazeDataProps | null = null;
   private player!: Phaser.Physics.Arcade.Sprite;
   private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
   private darkness!: Phaser.GameObjects.Graphics;
@@ -21,41 +32,59 @@ class WholeMazeScene extends Phaser.Scene {
     super({ key: 'WholeMazeScene', physics: { default: 'arcade', arcade: { debug: false } } });
   }
 
-  init(data: { username?: string }) {
-    console.log(this.username);
-    this.username = data.username || '플레이어';
-  }
-
-  preload() {
+  async preload() {
     this.load.image('background', '/assets/images/background.jpg');
     this.load.image('wall', '/assets/images/tile_0005.png'); // ✅ 미로 벽 타일
     this.load.image('floor', '/assets/images/tile_0001.png'); // ✅ 바닥 타일
     this.load.image('player', '/assets/images/player_walk1.png');
     this.load.image('npc', '/assets/images/npc.png');
+
+    await this.fetchMazeData();
+  }
+
+  async fetchMazeData() {
+    try {
+      const res = await getMaze();
+      this.mazeData = res?.data; // ✅ API 응답을 상태에 저장
+      console.log('미로 데이터 불러오기 성공:', this.mazeData);
+    } catch (error) {
+      console.error('미로 데이터를 가져오는 중 오류 발생:', error);
+    }
   }
 
   create() {
-    // ✅ 우측 상단에 타이머 UI 추가
+    if (!this.mazeData) {
+      console.error('❌ 미로 데이터를 불러오지 못했습니다.');
+      return;
+    }
+
     this.timerText = this.add.text(
-      this.scale.width - 120, // 오른쪽 끝에서 120px 왼쪽으로
-      20, // 위쪽 여백 20px
+      1020,
+      430, // 🔥 고정된 위치
       `남은 시간: ${this.timeLeft}`,
       {
-        fontSize: '24px',
+        fontSize: '5px',
         color: '#ffffff',
         fontStyle: 'bold',
-        backgroundColor: 'rgba(0, 0, 0, 0.5)',
         padding: { x: 10, y: 5 },
+        resolution: window.devicePixelRatio,
       },
     );
-    this.timerText.setOrigin(1, 0); // 우측 상단 고정
-    this.timerText.setDepth(1001);
 
-    // ✅ 타이머 이벤트 실행 (1초마다 감소)
+    this.timerText.setDepth(1100); // ✅ 최상위 UI로 변경
+    this.timerText.setScrollFactor(0); // ✅ UI 고정
+
+    // ✅ 타이머 이벤트 실행
     this.timerEvent = this.time.addEvent({
-      delay: 1000, // 1초마다 실행
-      callback: this.updateTimer,
-      callbackScope: this,
+      delay: 1000,
+      callback: () => {
+        if (this.timerText) {
+          this.timeLeft -= 1;
+          this.timerText.setText(`남은 시간: ${this.timeLeft}`);
+        } else {
+          console.warn('❌ this.timerText가 존재하지 않음!');
+        }
+      },
       loop: true,
     });
 
@@ -66,20 +95,11 @@ class WholeMazeScene extends Phaser.Scene {
     this.bg.setDepth(-10);
     this.bg.setAlpha(0); // 📌 시작할 때는 배경을 숨김
 
-    // ✅ 간단한 미로 생성 (2D 배열 기반)
-    const maze = [
-      [1, 1, 1, 1, 1, 1, 1, 1, 2, 1],
-      [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
-      [1, 0, 1, 0, 1, 0, 1, 3, 0, 1],
-      [1, 0, 1, 0, 0, 0, 1, 0, 0, 1],
-      [1, 0, 1, 1, 1, 1, 1, 0, 1, 1],
-      [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-    ];
-
     const tileSize = 16; // 타일 크기
-    const mazeWidth = maze[0].length * tileSize; // 미로 전체 너비
-    const mazeHeight = maze.length * tileSize; // 미로 전체 높이
+    const maze = this.mazeData.maze;
+
+    const mazeWidth = maze[0].length * tileSize;
+    const mazeHeight = maze.length * tileSize;
 
     // ✅ 물리 충돌을 위한 벽 그룹 생성
     this.walls = this.physics.add.staticGroup();
@@ -103,11 +123,11 @@ class WholeMazeScene extends Phaser.Scene {
           const wall = this.add.image(x, y, 'wall').setOrigin(0);
           wall.setDepth(1);
           this.walls.add(wall);
-        } else if (tileType === 2) {
+        } else if (tileType === 4) {
           exitX = x;
           exitY = y;
           this.add.image(x, y, 'floor').setOrigin(0);
-        } else if (tileType === 3) {
+        } else if (tileType === 2) {
           // 먼저 바닥 타일 추가
           this.add.image(x, y, 'floor').setOrigin(0);
 
@@ -157,11 +177,13 @@ class WholeMazeScene extends Phaser.Scene {
     // ✅ 카메라 위치 조정 (미로 중앙으로 이동)
     this.cameras.main.centerOn(mazeWidth / 2, mazeHeight / 2);
 
-    // ✅ 플레이어 생성 및 크기 조정 (타일 하나 크기와 같게)
-    this.player = this.physics.add
-      .sprite(tileSize * 1.5, tileSize * 1.5, 'player') // 시작 위치를 바닥 타일 위로 수정
-      .setOrigin(0.5, 0.5)
-      .setDepth(2);
+    // ✅ 플레이어 설정 (서버 데이터 사용)
+    const playerX = this.mazeData.userPos[0] * tileSize + tileSize / 2;
+    const playerY = this.mazeData.userPos[1] * tileSize + tileSize / 2;
+
+    this.player = this.physics.add.sprite(playerX, playerY, 'player').setOrigin(0.5);
+    this.player.setCollideWorldBounds(true);
+    this.physics.add.collider(this.player, this.walls);
 
     // ✅ 플레이어 크기를 타일 하나 크기로 조정
     const playerWidth = tileSize * 0.8; // 약간 여유를 두어 타일보다 약간 작게 설정
@@ -172,8 +194,6 @@ class WholeMazeScene extends Phaser.Scene {
     const widthScale = playerWidth / playerImage.width;
     const heightScale = playerHeight / playerImage.height;
     this.player.setScale(widthScale, heightScale);
-
-    this.player.setCollideWorldBounds(true); // 벽 통과 못 하게 설정
 
     // ✅ 플레이어와 벽 사이의 충돌 설정
     this.physics.add.collider(this.player, this.walls);
@@ -319,7 +339,7 @@ class WholeMazeScene extends Phaser.Scene {
   updateDarkness() {
     if (!this.player || !this.darkness) return;
     this.darkness.clear();
-    this.darkness.fillStyle(0x000000, 0.95);
+    this.darkness.fillStyle(0x000000, 1.0);
 
     const playerX = this.player.x;
     const playerY = this.player.y;
