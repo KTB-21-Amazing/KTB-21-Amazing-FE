@@ -1,29 +1,80 @@
-export const menuStyles = {
-  backgroundScale: 1.2,
-  buttonScale: 0.8,
-  textStyle: {
-    fontSize: '24px',
-    color: '#fff',
-    fontFamily: 'Galmuri14',
-  },
-};
+import styled from 'styled-components';
 
-// ✅ 텍스트 스타일 (닉네임 입력창 & 버튼 텍스트)
-export const textStyle = {
-  fontSize: '24px',
-  fontFamily: 'Galmuri14',
-  color: '#ffffff',
-  backgroundColor: '#000000',
-  padding: { left: 10, right: 10, top: 5, bottom: 5 },
-};
+export const Background = styled.div`
+  width: 100vw;
+  height: 100vh;
+  background-image: url('/src/assets/images/background.jpg'); /* ✅ 이미지 경로 */
+  background-size: cover; /* ✅ 화면 꽉 채우기 */
+  background-position: center;
+  background-repeat: no-repeat;
+  position: relative;
+  display: flex;
+`;
 
-export const cursorStyle = {
-  backgroundColor: 'white',
-};
+export const Head = styled.div``;
 
-// ✅ 버튼 텍스트 스타일
-export const buttonTextStyle = {
-  fontSize: '24px',
-  fontFamily: 'Galmuri14',
-  color: 'black',
-};
+export const TimeOut = styled.div``;
+export const Bottom = styled.div`
+  position: absolute;
+  display: flex;
+  justify-content: center;
+  height: 80%;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  //background-color: red;
+`;
+
+export const myImg = styled.img`
+  position: absolute;
+  height: 80%;
+  image-rendering: pixelated;
+  bottom: 50px;
+  left: 100px;
+`;
+
+export const TalkBox = styled.div`
+  align-items: center;
+  display: flex;
+  position: absolute;
+  bottom: 20px;
+  min-height: 30%;
+  border-radius: 10px;
+  margin: 30px;
+  width: 80%;
+  padding: 20px 50px;
+  font-size: 40px;
+  overflow: hidden;
+  background-color: PeachPuff;
+`;
+
+export const InputBox = styled.div`
+  display: flex;
+  letter-spacing: 5px;
+  gap: 40px;
+  margin: 0px 20px;
+  align-items: center;
+  flex: 1;
+`;
+
+export const nameInput = styled.input`
+  border: none;
+  font-size: 40px;
+`;
+
+export const nextPart = styled.div`
+  font-size: 30px;
+  margin-top: 60px;
+  margin-right: 10px;
+  display: flex;
+  gap: 15px;
+  height: 100%;
+  align-items: center;
+`;
+
+export const enterImg = styled.img``;
+
+export const next = styled.p`
+  font-weight: 800;
+  letter-spacing: 10px;
+`;
