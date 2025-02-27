@@ -35,10 +35,10 @@ jobs:
           cd AMAZING-
           npm run build
 
-      - name: 📂 Zip build files
+      - name: 📂 Zip build files (including appspec.yml)
         run: |
           ls -lah ./AMAZING-/dist  # dist 폴더 확인
-          zip -qq -r $GITHUB_SHA.zip AMAZING-/dist/ -x ".git/*"
+          zip -qq -r $GITHUB_SHA.zip AMAZING-/dist/ appspec.yml scripts/ -x ".git/*"
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
