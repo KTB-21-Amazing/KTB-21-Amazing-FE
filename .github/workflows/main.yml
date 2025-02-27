@@ -7,7 +7,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-22.04
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v2
@@ -17,14 +16,27 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Install Dependencies
+      - name: Install dependencies
         run: npm install
 
-      - name: Build Project
+      - name: Build project
         run: npm run build
 
-      - name: Zip build files
-        run: zip -qq -r frontend-build.zip ./dist
+      - name: List files before zipping
+        run: ls -lah
+
+      - name: Zip application files
+        run: |
+          zip -qq -r $GITHUB_SHA.zip . -x ".git/*" ".github/*" "node_modules/*" "dist/*"
+
+      - name: Check if zip file exists
+        run: |
+          if [ -f "$GITHUB_SHA.zip" ]; then
+            echo "✅ ZIP file exists"
+          else
+            echo "❌ ZIP file missing!"
+            exit 1
+          fi
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
@@ -32,6 +44,10 @@ jobs:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
           aws-region: ap-northeast-2
+
+      - name: List files before upload
+        run: ls -lah
+
 
       - name: upload to S3
         run: aws s3 cp --region ap-northeast-2 ./$GITHUB_SHA.zip s3://codedeploy-mello/$GITHUB_SHA.zip
