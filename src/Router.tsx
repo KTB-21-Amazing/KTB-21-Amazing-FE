@@ -1,5 +1,5 @@
 import { Routes, Route } from 'react-router-dom';
-import Userform from './pages/userform/userform';
+import Userform from './pages/userform/Userform';
 
 const AppRouter = () => {
   return (
