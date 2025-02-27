@@ -2,11 +2,11 @@ version: 0.0
 os: linux
 files:
   - source: ./AMAZING-/dist
-    destination: /usr/share/nginx
+    destination: /var/www
     overwrite: yes
 
 permissions:
-  - object: /usr/share/nginx
+  - object: /var/www
     owner: root
     group: root
     mode: 755
