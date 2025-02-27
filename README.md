@@ -1,4 +1,4 @@
-# 접속하는법
+# 임시 접속하는법(수정중)
 ## Openvpn 설치
 [Openvpn](https://13.124.72.110:943/)
 ![alt text](readmeImg/image.png)
