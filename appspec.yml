@@ -7,16 +7,16 @@ files:
 
 permissions:
   - object: /var/www/html
-    owner: root
-    group: root
+    owner: ubuntu
+    group: ubuntu
     mode: 755
 
 hooks:
   BeforeInstall:
     - location: scripts/before_install.sh
       timeout: 300
-      runas: root
+      runas: ubuntu
   AfterInstall:
     - location: scripts/after_deploy.sh
       timeout: 300
-      runas: root
+      runas: ubuntu
