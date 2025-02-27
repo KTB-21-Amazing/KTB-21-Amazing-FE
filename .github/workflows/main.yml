@@ -12,16 +12,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: Install Node.js
-        uses: actions/setup-node@v3
-        with:
-          node-version: '20'
+      - name: Check Node v # Node v 확인
+        run: node -v
 
-      - name: Install Dependencies
-        run: npm install
+      - name: Install Dependencies # 의존 파일 설치
+        run: yarn install --frozen-lockfile
 
-      - name: Build Project
-        run: npm run build
+      - name: Build # React Build
+        run: yarn build
+        env:
+          CI: ""
 
       - name: Zip build files
         run: |
