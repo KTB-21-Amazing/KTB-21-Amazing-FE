@@ -1,12 +1,12 @@
 version: 0.0
 os: linux
 files:
-  - source: ./dist
-    destination: /usr/share/nginx/html
+  - source: ./AMAZING-/dist
+    destination: /usr/share/nginx
     overwrite: yes
 
 permissions:
-  - object: /usr/share/nginx/html
+  - object: /usr/share/nginx
     owner: root
     group: root
     mode: 755

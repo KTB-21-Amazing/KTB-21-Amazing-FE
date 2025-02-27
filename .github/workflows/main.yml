@@ -9,27 +9,36 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-      - name: Checkout repository
+      - name: 🛎️ Checkout repository
         uses: actions/checkout@v2
 
-      - name: Check Node v # Node v 확인
+      - name: 🔍 Check Node.js version
         run: node -v
 
-      - name: Install Node.js
+      - name: 📦 Install Node.js
         uses: actions/setup-node@v3
         with:
           node-version: '20'
 
-      - name: Install Dependencies
-        run: npm install
+      - name: 📂 Change to project directory
+        run: cd AMAZING-
 
-      - name: Build Project
-        run: npm run build
-
-      - name: Zip build files
+      - name: 📥 Install Dependencies
         run: |
-          ls -lah ./dist  # dist 폴더 확인
-          zip -qq -r $GITHUB_SHA.zip dist/
+          cd AMAZING-
+          npm install
+          npm install phaser
+          npm install vite-plugin-static-copy
+
+      - name: 🏗️ Build Project
+        run: |
+          cd AMAZING-
+          npm run build
+
+      - name: 📂 Zip build files
+        run: |
+          ls -lah ./AMAZING-/dist  # dist 폴더 확인
+          zip -qq -r $GITHUB_SHA.zip AMAZING-/dist/
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
