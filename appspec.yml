@@ -2,11 +2,11 @@ version: 0.0
 os: linux
 files:
   - source: ./dist
-    destination: /var/www/html
+    destination: /usr/share/nginx/www
     overwrite: yes
 
 permissions:
-  - object: /var/www/html
+  - object: /usr/share/nginx/www
     owner: root
     group: root
     mode: 755
