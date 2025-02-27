@@ -2,8 +2,6 @@ name: github-action-testWeb # workflow 이름
 # workflows 테스트 github에서 돌려보고 피드백
 
 on:
-  push:
-    branches: [main]
   pull_request:
     branches: [main]
 
