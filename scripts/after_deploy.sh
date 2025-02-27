@@ -1,5 +1,3 @@
-#!/bin/bash
-sudo rm -rf /var/www/html/*
 
 # 아파치2 서버 재시작
 sudo systemctl restart apache2
