@@ -12,6 +12,11 @@ class WholeMazeScene extends Phaser.Scene {
   private npcs!: Phaser.Physics.Arcade.Group;
   private isInteractingWithNPC: boolean = false;
 
+  // ✅ 타이머 관련 변수
+  private timerText!: Phaser.GameObjects.Text;
+  private timeLeft: number = 30; // 시작 시간 (30초)
+  private timerEvent!: Phaser.Time.TimerEvent; // 타이머 이벤트 저장
+
   constructor() {
     super({ key: 'WholeMazeScene', physics: { default: 'arcade', arcade: { debug: false } } });
   }
@@ -30,6 +35,30 @@ class WholeMazeScene extends Phaser.Scene {
   }
 
   create() {
+    // ✅ 우측 상단에 타이머 UI 추가
+    this.timerText = this.add.text(
+      this.scale.width - 120, // 오른쪽 끝에서 120px 왼쪽으로
+      20, // 위쪽 여백 20px
+      `남은 시간: ${this.timeLeft}`,
+      {
+        fontSize: '24px',
+        color: '#ffffff',
+        fontStyle: 'bold',
+        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+        padding: { x: 10, y: 5 },
+      },
+    );
+    this.timerText.setOrigin(1, 0); // 우측 상단 고정
+    this.timerText.setDepth(1001);
+
+    // ✅ 타이머 이벤트 실행 (1초마다 감소)
+    this.timerEvent = this.time.addEvent({
+      delay: 1000, // 1초마다 실행
+      callback: this.updateTimer,
+      callbackScope: this,
+      loop: true,
+    });
+
     // ✅ 배경을 먼저 로드하지만 초기에는 보이지 않도록 설정
     this.bg = this.add.image(this.scale.width / 2, this.scale.height / 2, 'background');
     this.bg.setOrigin(0.5).setDisplaySize(this.scale.width, this.scale.height);
@@ -178,6 +207,63 @@ class WholeMazeScene extends Phaser.Scene {
     });
   }
 
+  // ✅ 1초마다 실행되는 타이머 함수
+  updateTimer() {
+    if (this.timeLeft > 0) {
+      this.timeLeft -= 1;
+      this.timerText.setText(`남은 시간: ${this.timeLeft}`);
+    } else {
+      this.timerEvent.remove(); // 타이머 종료
+      this.failGame(); // "실패!" 애니메이션 실행
+    }
+  }
+
+  // ✅ 실패 애니메이션 및 게임 오버 처리
+  failGame() {
+    this.timeLeft = 0;
+    this.timerText.setText(`남은 시간: 0`);
+
+    // ✅ 플레이어 이동 중지
+    this.player.setVelocity(0, 0);
+    // ✅ 키보드 입력 비활성화 (안전하게 적용)
+    if (this.input.keyboard) {
+      this.input.keyboard.enabled = false;
+    }
+
+    // ✅ `this.cursors`를 `null`로 만들지 않고, 입력을 막음
+    this.cursors.left.isDown = false;
+    this.cursors.right.isDown = false;
+    this.cursors.up.isDown = false;
+    this.cursors.down.isDown = false;
+
+    // ✅ "실패!" 텍스트 생성 (화면 중앙에 크게 표시)
+    const failText = this.add.text(
+      this.scale.width / 2,
+      -100, // 처음에는 화면 위쪽에 배치
+      '실패!',
+      {
+        fontSize: '80px',
+        fontStyle: 'bold',
+        color: '#ff0000',
+        stroke: '#000000',
+        strokeThickness: 6,
+      },
+    );
+    failText.setOrigin(0.5, 0.5);
+
+    // ✅ 애니메이션: "실패!"가 쿵! 떨어지는 효과
+    this.tweens.add({
+      targets: failText,
+      y: this.scale.height / 2, // 화면 중앙으로 떨어짐
+      duration: 800, // 0.8초 동안 애니메이션 실행
+      ease: 'Bounce.easeOut',
+      onComplete: () => {
+        this.time.delayedCall(2000, () => {
+          this.scene.restart(); // 2초 후 씬 재시작 (or 다른 로직 추가 가능)
+        });
+      },
+    });
+  }
   update() {
     if (this.isExiting) return;
     if (!this.cursors) return;

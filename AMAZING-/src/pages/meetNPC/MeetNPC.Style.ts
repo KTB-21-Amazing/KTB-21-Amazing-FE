@@ -1,9 +1,10 @@
 import styled from 'styled-components';
+import backgroundImg from '@/assets/images/background.jpg';
 
 export const Background = styled.div`
   width: 100vw;
   height: 100vh;
-  background-image: url('/src/assets/images/background.jpg'); /* ✅ 이미지 경로 */
+  background-image: url(${backgroundImg}); /* ✅ 이미지 경로 */
   background-size: cover; /* ✅ 화면 꽉 채우기 */
   background-position: center;
   background-repeat: no-repeat;
