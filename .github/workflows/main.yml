@@ -1,25 +1,32 @@
-name: github-action-testWeb # workflow 이름
-# workflows 테스트 github에서 돌려보고 피드백
+name: Deploy Frontend to EC2
 
 on:
   pull_request:
     branches: [main]
- 
-jobs: 
-  build: 
+
+jobs:
+  deploy:
     runs-on: ubuntu-22.04
+
     steps:
-      - name: git clone
+      - name: Checkout repository
         uses: actions/checkout@v2
 
-      - name: zip 생성
-        working-directory: ./
-        run: |
-          ls -lah  # 포함된 파일 확인
-          zip -qq -r $GITHUB_SHA.zip . -x ".git/*" # .git 폴더 제외
-        shell: bash
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '20'
 
-      - name: AWS configure credentials
+      - name: Install Dependencies
+        run: npm install
+
+      - name: Build Project
+        run: npm run build
+
+      - name: Zip build files
+        run: zip -qq -r frontend-build.zip ./dist
+
+      - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY }}
