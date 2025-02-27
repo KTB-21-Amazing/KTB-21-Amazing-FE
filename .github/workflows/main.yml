@@ -24,7 +24,9 @@ jobs:
         run: npm run build
 
       - name: Zip build files
-        run: zip -qq -r frontend-build.zip ./dist
+        run: |
+          ls -lah ./dist  # dist 폴더 확인
+          zip -qq -r $GITHUB_SHA.zip dist/
 
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v1
