@@ -1,19 +1,18 @@
-version: 0.0 # 코드 디플로이 용
+version: 0.0
 os: linux
 files:
-  - source:  .
+  - source: ./dist
     destination: /var/www/html
     overwrite: yes
 
 permissions:
-  - object: /
-    pattern: "**"
+  - object: /var/www/html
     owner: root
     group: root
     mode: 755
 
 hooks:
-  ApplicationStart:
+  AfterInstall:
     - location: scripts/after_deploy.sh
       timeout: 300
-      runas: root
+      runas: ubuntu
