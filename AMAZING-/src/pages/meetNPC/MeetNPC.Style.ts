@@ -11,6 +11,9 @@ export const Background = styled.div`
   display: flex;
 `;
 
+export const Head = styled.div``;
+
+export const TimeOut = styled.div``;
 export const Bottom = styled.div`
   position: absolute;
   bottom: 0;
@@ -37,7 +40,7 @@ export const TalkBox = styled.div`
   background-color: PeachPuff;
 `;
 
-export const TextBox = styled.textarea`
+export const TextBox = styled.div`
   flex-grow: 1;
   resize: none;
   border: none;
