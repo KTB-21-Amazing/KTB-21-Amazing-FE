@@ -1,0 +1,236 @@
+import Phaser from 'phaser';
+
+class WholeMazeScene extends Phaser.Scene {
+  private username: string = ''; // 닉네임 저장
+  private player!: Phaser.Physics.Arcade.Sprite;
+  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
+  private darkness!: Phaser.GameObjects.Graphics;
+  private walls!: Phaser.Physics.Arcade.StaticGroup;
+  private exitTile!: Phaser.GameObjects.Rectangle;
+  private isExiting: boolean = false;
+  private bg!: Phaser.GameObjects.Image;
+
+  constructor() {
+    super({ key: 'WholeMazeScene', physics: { default: 'arcade', arcade: { debug: false } } });
+  }
+
+  init(data: { username?: string }) {
+    this.username = data.username || '플레이어';
+  }
+
+  preload() {
+    this.load.image('background', '/assets/images/background.jpg');
+    this.load.image('wall', '/assets/images/tile_0005.png'); // ✅ 미로 벽 타일
+    this.load.image('floor', '/assets/images/tile_0001.png'); // ✅ 바닥 타일
+    this.load.image('player', '/assets/images/player_walk1.png');
+  }
+
+  create() {
+    // ✅ 배경을 먼저 로드하지만 초기에는 보이지 않도록 설정
+    this.bg = this.add.image(this.scale.width / 2, this.scale.height / 2, 'background');
+    this.bg.setOrigin(0.5).setDisplaySize(this.scale.width, this.scale.height);
+    this.bg.setScrollFactor(0);
+    this.bg.setDepth(-10);
+    this.bg.setAlpha(0); // 📌 시작할 때는 배경을 숨김
+
+    // ✅ 간단한 미로 생성 (2D 배열 기반)
+    const maze = [
+      [1, 1, 1, 1, 1, 1, 1, 1, 2, 1],
+      [1, 0, 0, 0, 1, 0, 0, 0, 0, 1],
+      [1, 0, 1, 0, 1, 0, 1, 1, 0, 1],
+      [1, 0, 1, 0, 0, 0, 1, 0, 0, 1],
+      [1, 0, 1, 1, 1, 1, 1, 0, 1, 1],
+      [0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
+      [1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
+    ];
+
+    const tileSize = 16; // 타일 크기
+    const mazeWidth = maze[0].length * tileSize; // 미로 전체 너비
+    const mazeHeight = maze.length * tileSize; // 미로 전체 높이
+
+    // ✅ 물리 충돌을 위한 벽 그룹 생성
+    this.walls = this.physics.add.staticGroup();
+    let exitX = 0,
+      exitY = 0;
+
+    // ✅ 미로 타일 배치
+    for (let row = 0; row < maze.length; row++) {
+      for (let col = 0; col < maze[row].length; col++) {
+        const tileType = maze[row][col];
+        const x = col * tileSize;
+        const y = row * tileSize;
+
+        if (tileType === 1) {
+          // 벽 추가 및 물리 충돌 설정
+          const wall = this.add.image(x, y, 'wall').setOrigin(0);
+          wall.setDepth(1);
+          this.walls.add(wall);
+        } else if (tileType === 2) {
+          // 출구 위치 저장
+          exitX = x;
+          exitY = y;
+          this.add.image(x, y, 'floor').setOrigin(0);
+        } else {
+          this.add.image(x, y, 'floor').setOrigin(0);
+        }
+      }
+    }
+
+    // ✅ 출구 표시 (디버깅용)
+    this.exitTile = this.add.rectangle(
+      exitX + tileSize / 2,
+      exitY + tileSize / 2,
+      tileSize,
+      tileSize,
+      0x00ff00,
+      0,
+    );
+    this.physics.add.existing(this.exitTile, true);
+
+    // ✅ 화면 크기 가져오기
+    const screenWidth = window.innerWidth;
+    const screenHeight = window.innerHeight;
+
+    // ✅ `setZoom()`을 자동 조정하여 미로가 화면에 꽉 차도록 설정
+    const zoomX = screenWidth / mazeWidth;
+    const zoomY = screenHeight / mazeHeight;
+    const zoom = Math.min(zoomX, zoomY); // 최소값을 선택하여 화면에 맞춤
+
+    this.cameras.main.setZoom(zoom); // ✅ 자동 줌 적용
+
+    // ✅ 카메라 위치 조정 (미로 중앙으로 이동)
+    this.cameras.main.centerOn(mazeWidth / 2, mazeHeight / 2);
+
+    // ✅ 플레이어 생성 및 크기 조정 (타일 하나 크기와 같게)
+    this.player = this.physics.add
+      .sprite(tileSize * 1.5, tileSize * 1.5, 'player') // 시작 위치를 바닥 타일 위로 수정
+      .setOrigin(0.5, 0.5)
+      .setDepth(2);
+
+    // ✅ 플레이어 크기를 타일 하나 크기로 조정
+    const playerWidth = tileSize * 0.9; // 약간 여유를 두어 타일보다 약간 작게 설정
+    const playerHeight = tileSize * 0.9;
+
+    // ✅ 플레이어 이미지 크기 조정
+    const playerImage = this.textures.get('player').getSourceImage();
+    const widthScale = playerWidth / playerImage.width;
+    const heightScale = playerHeight / playerImage.height;
+    this.player.setScale(widthScale, heightScale);
+
+    this.player.setCollideWorldBounds(true); // 벽 통과 못 하게 설정
+
+    // ✅ 플레이어와 벽 사이의 충돌 설정
+    this.physics.add.collider(this.player, this.walls);
+
+    // ✅ 키보드 입력 설정
+    if (!this.input || !this.input.keyboard) {
+      console.warn('Keyboard input is not available!');
+      return;
+    }
+
+    this.cursors = this.input.keyboard.createCursorKeys();
+
+    this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
+
+    // ✅ 🔥 어둠 레이어 생성
+    this.darkness = this.add.graphics();
+    this.darkness.setDepth(1000); // 모든 요소 위에 배치
+
+    // ✅ 초기 어둠 적용
+    this.updateDarkness();
+    // ✅ 출구 충돌 감지
+    this.physics.add.overlap(this.player, this.exitTile, this.onExitReached, undefined, this);
+  }
+
+  update() {
+    if (this.isExiting) return;
+    if (!this.cursors) return;
+
+    // ✅ 플레이어 속도 설정
+    const speed = 80;
+
+    // ✅ 플레이어 이동 처리
+    if (this.cursors.left.isDown) {
+      this.player.setVelocityX(-speed);
+    } else if (this.cursors.right.isDown) {
+      this.player.setVelocityX(speed);
+    } else {
+      this.player.setVelocityX(0);
+    }
+
+    if (this.cursors.up.isDown) {
+      this.player.setVelocityY(-speed);
+    } else if (this.cursors.down.isDown) {
+      this.player.setVelocityY(speed);
+    } else {
+      this.player.setVelocityY(0);
+    }
+
+    // ✅ 플레이어 이동에 따라 어둠 갱신
+    this.updateDarkness();
+  }
+
+  updateDarkness() {
+    if (!this.player || !this.darkness) return;
+    this.darkness.clear();
+    this.darkness.fillStyle(0x000000, 0.95);
+
+    const playerX = this.player.x;
+    const playerY = this.player.y;
+    const lightRadius = 30;
+
+    // ✅ 원 바깥 네 영역을 덮어서 어둡게 만듦
+    const screenWidth = this.scale.width;
+    const screenHeight = this.scale.height;
+
+    // (1) 원 위쪽 영역 덮기
+    this.darkness.fillRect(0, 0, screenWidth, playerY - lightRadius);
+
+    // (2) 원 아래쪽 영역 덮기
+    this.darkness.fillRect(
+      0,
+      playerY + lightRadius,
+      screenWidth,
+      screenHeight - (playerY + lightRadius),
+    );
+
+    // (3) 원 왼쪽 영역 덮기
+    this.darkness.fillRect(0, playerY - lightRadius, playerX - lightRadius, lightRadius * 2);
+
+    // (4) 원 오른쪽 영역 덮기
+    this.darkness.fillRect(
+      playerX + lightRadius,
+      playerY - lightRadius,
+      screenWidth - (playerX + lightRadius),
+      lightRadius * 2,
+    );
+  }
+
+  // ✅ 출구에 도달하면 어둠을 점점 사라지게 함
+  onExitReached() {
+    this.isExiting = true;
+
+    this.tweens.add({
+      targets: this.darkness,
+      alpha: 0, // 어둠이 사라짐
+      duration: 100,
+      ease: 'Sine.easeInOut',
+      onComplete: () => {
+        this.darkness.destroy(); // 어둠 레이어 제거
+      },
+    });
+
+    this.tweens.add({
+      targets: this.bg,
+      alpha: 1, // 배경이 서서히 나타남
+      duration: 100,
+      ease: 'Sine.easeInOut',
+    });
+    // ✅ React 모달 열기
+    if (window.openModal) {
+      window.openModal();
+    }
+  }
+}
+
+export default WholeMazeScene;
