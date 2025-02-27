@@ -16,6 +16,7 @@ class WholeMazeScene extends Phaser.Scene {
 
   init(data: { username?: string }) {
     this.username = data.username || '플레이어';
+    console.log(`사용자 닉네임: ${this.username}`); // ✅ 콘솔 출력 추가
   }
 
   preload() {
