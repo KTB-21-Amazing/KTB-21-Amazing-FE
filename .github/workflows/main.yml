@@ -12,6 +12,9 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v2
 
+      - name: Check Node v # Node v 확인
+        run: node -v
+
       - name: Install Node.js
         uses: actions/setup-node@v3
         with:
