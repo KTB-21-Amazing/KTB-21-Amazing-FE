@@ -4,7 +4,7 @@ name: github-action-testWeb # workflow 이름
 on:
   pull_request:
     branches: [main]
-
+ 
 jobs: 
   build: 
     runs-on: ubuntu-22.04
