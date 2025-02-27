@@ -2,16 +2,20 @@ version: 0.0
 os: linux
 files:
   - source: ./AMAZING-/dist
-    destination: /var/www
+    destination: /var/www/html
     overwrite: yes
 
 permissions:
-  - object: /var/www
+  - object: /var/www/html
     owner: root
     group: root
     mode: 755
 
 hooks:
+  BeforeInstall:
+    - location: scripts/before_install.sh
+      timeout: 300
+      runas: root
   AfterInstall:
     - location: scripts/after_deploy.sh
       timeout: 300

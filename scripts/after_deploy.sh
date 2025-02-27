@@ -8,8 +8,8 @@ echo "🔄 Nginx 재시작 중..."
 sudo systemctl restart nginx
 
 # 파일 권한 설정 (웹 서버 사용자로 변경)
-echo "🔧 권한 설정: /var/www/"
-sudo chown -R www-data:www-data /var/www
+echo "🔧 권한 설정: /var/www/html"
+sudo chown -R www-data:www-data /var/www/html
 
 # 환경 변수 로드
 echo "🌎 환경 변수 로드 중..."
