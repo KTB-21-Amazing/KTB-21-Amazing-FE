@@ -4,6 +4,8 @@ name: github-action-testWeb # workflow 이름
 on:
   push:
     branches: [main]
+  pull_request:
+    branches: [main]
 
 jobs: 
   build: 
