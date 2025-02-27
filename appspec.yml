@@ -1,5 +1,6 @@
 version: 0.0
 os: linux
+
 files:
   - source: ./AMAZING-/dist
     destination: /var/www/html
