@@ -3,6 +3,7 @@ import { useEffect } from 'react';
 import Game from './components/common/Game';
 import MeetNPC from './pages/meetNPC/MeetNPC';
 import Userform from './pages/userform/Userform';
+import { GameProvider } from './context/GameContent';
 
 const AppRouter = () => {
   const navigate = useNavigate();
@@ -14,11 +15,13 @@ const AppRouter = () => {
   }, [navigate]);
 
   return (
+    <GameProvider>
     <Routes>
       <Route path="/" element={<Userform />} />
       <Route path="/maze" element={<Game />} />
       <Route path="/meet-npc" element={<MeetNPC />} />
     </Routes>
+    </GameProvider>
   );
 };
 
