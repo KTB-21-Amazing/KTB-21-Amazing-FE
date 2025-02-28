@@ -40,10 +40,10 @@ class WholeMazeScene extends Phaser.Scene {
     this.load.image('npc', '/assets/images/npc.webp');
   }
 
-  async fetchMazeData() {
+  async fetchMazeData(loc: [number, number] | null = null) {
     try {
-      const res = await getMaze();
-      this.mazeData = res?.data; // ✅ API 응답을 상태에 저장
+      const res = await getMaze(loc);
+      this.mazeData = res?.data;
       console.log('미로 데이터 불러오기 성공:', this.mazeData);
     } catch (error) {
       console.error('미로 데이터를 가져오는 중 오류 발생:', error);
@@ -51,7 +51,7 @@ class WholeMazeScene extends Phaser.Scene {
   }
 
   async create() {
-    await this.fetchMazeData(); // 🔄 create에서 미로 데이터 불러오기
+    await this.fetchMazeData(null); // 🔄 create에서 미로 데이터 불러오기
 
     if (!this.mazeData) {
       console.error('❌ 미로 데이터를 불러오지 못했습니다.');
@@ -314,29 +314,30 @@ class WholeMazeScene extends Phaser.Scene {
     this.updateDarkness();
   }
 
-  // ✅ NPC와의 충돌 이벤트 → React MeetNPC 화면 이동
   handleNPCInteraction(
     player: Phaser.Types.Physics.Arcade.GameObjectWithBody,
-    npc: Phaser.Types.Physics.Arcade.GameObjectWithBody,
+    npc: Phaser.GameObjects.GameObject
   ) {
-    console.log(player);
-    // NPC와 이미 상호작용 중인지 확인
     if (this.isInteractingWithNPC) return;
-
-    // 실제 NPC인지 확인 (데이터 속성으로)
-    if (npc.body && npc.body.gameObject.getData('isNPC')) {
-      console.log('엔피씨다');
+    console.log(player);
+  
+    if (npc instanceof Phaser.Physics.Arcade.Sprite && npc.body) {
+      console.log('엔피씨 충돌 감지:', npc.x, npc.y);
       this.isInteractingWithNPC = true;
-
-      // 플레이어 멈추기
+  
       this.player.setVelocity(0, 0);
-
-      // React 컴포넌트로 이동
+  
+      const npcLoc: [number, number] = [Math.floor(npc.x / 16), Math.floor(npc.y / 16)];
+      this.fetchMazeData(npcLoc);
+  
       if (window.navigateToMeetNPC) {
         window.navigateToMeetNPC();
       }
+    } else {
+      console.error('❌ NPC가 올바른 Sprite가 아니거나 body가 없음!', npc);
     }
   }
+  
 
   updateDarkness() {
     if (!this.player || !this.darkness) return;
