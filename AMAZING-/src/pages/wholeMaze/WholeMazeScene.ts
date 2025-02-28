@@ -40,10 +40,9 @@ class WholeMazeScene extends Phaser.Scene {
     this.load.image('npc', '/assets/images/npc.webp');
   }
 
-  async fetchMazeData(loc: [number, number] | null = null) {
+  async fetchMazeData(loc: number[] | null = null) {
     try {
-      const requestData=loc?{loc:Array.from(loc)}:{};
-      const res = await getMaze(requestData);
+      const res = await getMaze(loc);
       this.mazeData = res?.data;
       console.log('미로 데이터 불러오기 성공:', this.mazeData);
     } catch (error) {
