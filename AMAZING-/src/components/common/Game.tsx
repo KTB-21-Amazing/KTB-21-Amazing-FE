@@ -11,10 +11,7 @@ const Game: React.FC = () => {
   });
 
   const handleModalClose = () => {
-    setIsModalOpen((prev) => {
-      return !prev;
-    });
-    console.log(isModalOpen);
+    setIsModalOpen(false); // ✅ 확실하게 닫기
   };
 
   useEffect(() => {

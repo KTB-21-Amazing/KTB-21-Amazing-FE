@@ -8,7 +8,7 @@ interface ExitModalProps {
 const ExitModal = ({ onClose }: ExitModalProps) => {
   return (
     <Modal onClose={onClose}>
-      <S.ModalPart>축하해요요</S.ModalPart>
+      <S.ModalPart>탈출을 축하합니다!!!!!</S.ModalPart>
     </Modal>
   );
 };

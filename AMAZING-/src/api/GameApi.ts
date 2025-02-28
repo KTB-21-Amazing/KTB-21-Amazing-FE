@@ -4,7 +4,7 @@ import api from './instance';
  * 미로 정보 조회
  * @returns
  */
-export const getMaze = async (data:{loc:number[]}|{}) => {
+export const getMaze = async (data:{loc:number[]}) => {
   try {
     const response = await api.post('/maze',data);
     return response;
