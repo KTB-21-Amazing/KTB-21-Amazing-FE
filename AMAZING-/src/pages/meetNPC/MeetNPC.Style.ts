@@ -12,6 +12,25 @@ export const Background = styled.div`
   display: flex;
 `;
 
+export const Close = styled.div`
+  position: absolute;
+  top: 30px;
+  right: 80px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+`;
+
+export const XIcon = styled.img`
+  width: 40px;
+`;
+
+export const Ment = styled.p`
+  color: white;
+  font-size: 30px;
+`;
+
 export const Head = styled.div``;
 
 export const TimeOut = styled.div``;
@@ -38,16 +57,17 @@ export const TalkBox = styled.div`
   width: 100%;
   padding: 30px;
   overflow: hidden;
-  background-color: PeachPuff;
+  background-color: Black;
+  color: white;
 `;
 
 export const TextBox = styled.div`
   height: 200px;
   overflow: auto;
+  color: white;
   flex-grow: 1;
   resize: none;
   border: none;
-  background-color: transparent;
   width: 100%;
   font-size: 30px;
   letter-spacing: 5px;
@@ -92,6 +112,7 @@ export const ChooseBox = styled.div`
   border-radius: 10px;
   font-size: 20px;
   padding: 30px;
-  background-color: PeachPuff;
+  background-color: Black;
+  color: white;
   cursor: pointer;
 `;

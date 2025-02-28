@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import * as S from './Userform.Style';
-import myImg from '../../assets/images/player_cheer1.png';
+import myImg from '../../assets/images/player_walk1.webp';
 import enterImg from '../../assets/icons/Enter.svg';
 import { useNavigate } from 'react-router-dom';
 import { getWorld } from '../../api/GameApi';

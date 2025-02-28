@@ -36,10 +36,8 @@ class WholeMazeScene extends Phaser.Scene {
     this.load.image('background', '/assets/images/background.jpg');
     this.load.image('wall', '/assets/images/tile_0005.png'); // ✅ 미로 벽 타일
     this.load.image('floor', '/assets/images/tile_0001.png'); // ✅ 바닥 타일
-    this.load.image('player', '/assets/images/player_walk1.png');
-    this.load.image('npc', '/assets/images/npc.png');
-
-    await this.fetchMazeData();
+    this.load.image('player', '/assets/images/player_walk1.webp');
+    this.load.image('npc', '/assets/images/npc.webp');
   }
 
   async fetchMazeData() {
@@ -52,11 +50,15 @@ class WholeMazeScene extends Phaser.Scene {
     }
   }
 
-  create() {
+  async create() {
+    await this.fetchMazeData(); // 🔄 create에서 미로 데이터 불러오기
+
     if (!this.mazeData) {
       console.error('❌ 미로 데이터를 불러오지 못했습니다.');
       return;
     }
+
+    console.log('🎉 미로 데이터:', this.mazeData);
 
     this.timerText = this.add.text(
       1020,
@@ -186,8 +188,8 @@ class WholeMazeScene extends Phaser.Scene {
     this.physics.add.collider(this.player, this.walls);
 
     // ✅ 플레이어 크기를 타일 하나 크기로 조정
-    const playerWidth = tileSize * 0.8; // 약간 여유를 두어 타일보다 약간 작게 설정
-    const playerHeight = tileSize * 0.8;
+    const playerWidth = tileSize * 0.7; // 약간 여유를 두어 타일보다 약간 작게 설정
+    const playerHeight = tileSize * 0.7;
 
     // ✅ 플레이어 이미지 크기 조정
     const playerImage = this.textures.get('player').getSourceImage();

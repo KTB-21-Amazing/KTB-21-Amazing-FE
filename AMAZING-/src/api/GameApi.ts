@@ -4,9 +4,11 @@ import api from './instance';
  * 미로 정보 조회
  * @returns
  */
-export const getMaze = async () => {
+export const getMaze = async (loc: [number, number]) => {
   try {
-    const response = await api.get('/maze');
+    const response = await api.post('/maze_mod', {
+      loc,
+    });
     return response;
   } catch (error) {
     console.error(error);

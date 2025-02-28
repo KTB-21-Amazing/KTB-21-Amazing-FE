@@ -1,11 +1,16 @@
 import * as S from './MeetNPC.Style';
-import npc from '../../assets/images/npc.png';
+import npc from '../../assets/images/npc.webp';
 import { useEffect, useState } from 'react';
 import { getQuiz, getQuizResult } from '../../api/GameApi';
 import Loading from '../../components/common/Loading/Loding';
+import x from '../../assets/icons/x.svg';
+import { useNavigate } from 'react-router-dom';
 
 interface QuizDataProps {
-  QuizDescription: string;
+  quiz: string;
+  option1: string;
+  option2: string;
+  option3: string;
 } // 퀴즈 데이터 반환 타입
 
 interface AnswerDataProps {
@@ -14,6 +19,7 @@ interface AnswerDataProps {
 } // 정답 데이터 반환 타입
 
 const MeetNPC = () => {
+  const navigate = useNavigate();
   const [quizData, setQuizData] = useState<QuizDataProps | null>(null);
   const [answer, setAnswer] = useState<AnswerDataProps | null>(null);
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
@@ -27,6 +33,7 @@ const MeetNPC = () => {
       try {
         const quiz = await getQuiz(); // API 호출
         setQuizData(quiz?.data);
+        console.log(quiz);
       } catch (error) {
         console.error('Failed to fetch quiz:', error);
       } finally {
@@ -41,6 +48,7 @@ const MeetNPC = () => {
     try {
       const res = await getQuizResult(userAnswer); // 사용자의 선택을 서버에 요청
       setAnswer(res?.data); // 정답 데이터 업데이트
+      console.log(res);
     } catch (error) {
       console.error('Failed to fetch quiz result:', error);
     }
@@ -56,11 +64,18 @@ const MeetNPC = () => {
 
   return (
     <S.Background>
+      {isSelected && (
+        <>
+          <S.Close onClick={() => navigate('/maze')}>
+            <S.XIcon src={x} />
+            <S.Ment>닫기</S.Ment>
+          </S.Close>
+        </>
+      )}
       <S.Head>
         <S.TimeOut />
       </S.Head>
       <S.Bottom>
-        <S.NpcImg src={npc} />
         {isLoading ? (
           <Loading />
         ) : (
@@ -71,18 +86,25 @@ const MeetNPC = () => {
               ) : selectedAnswer ? (
                 <S.TextBox>잠시만요... 🤔</S.TextBox> // API 요청 중 상태 표시
               ) : (
-                <S.TextBox>{quizData?.QuizDescription}</S.TextBox>
+                <S.TextBox>{quizData?.quiz}</S.TextBox>
               )}
             </S.TalkBox>
             {!isSelected && (
               <S.AnswerBox>
-                <S.ChooseBox onClick={() => handleAnswerClick('1')}>1번인듯!</S.ChooseBox>
-                <S.ChooseBox onClick={() => handleAnswerClick('2')}>2번인듯!</S.ChooseBox>
-                <S.ChooseBox onClick={() => handleAnswerClick('3')}>3번인듯!</S.ChooseBox>
+                <S.ChooseBox onClick={() => handleAnswerClick('1')}>
+                  {quizData?.option1}
+                </S.ChooseBox>
+                <S.ChooseBox onClick={() => handleAnswerClick('2')}>
+                  {quizData?.option2}
+                </S.ChooseBox>
+                <S.ChooseBox onClick={() => handleAnswerClick('3')}>
+                  {quizData?.option3}
+                </S.ChooseBox>
               </S.AnswerBox>
             )}
           </S.Interact>
         )}
+        <S.NpcImg src={npc} />
       </S.Bottom>
     </S.Background>
   );
