@@ -42,7 +42,7 @@ class WholeMazeScene extends Phaser.Scene {
 
   async fetchMazeData(loc: number[] | null = null) {
     try {
-      const requestData=loc?{loc}:{loc:[0,0]};
+      const requestData=loc?{loc}:{loc:[5,5]};
       const res = await getMaze(requestData);
       this.mazeData = res?.data;
       console.log('미로 데이터 불러오기 성공:', this.mazeData);
