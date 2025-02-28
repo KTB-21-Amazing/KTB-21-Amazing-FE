@@ -42,6 +42,8 @@ class WholeMazeScene extends Phaser.Scene {
 
   async fetchMazeData() {
     try {
+      someFunction(); // 인자가 빠진 상태
+
       const res = await getMaze();
       this.mazeData = res?.data; // ✅ API 응답을 상태에 저장
       console.log('미로 데이터 불러오기 성공:', this.mazeData);
