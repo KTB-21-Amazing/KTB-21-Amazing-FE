@@ -38,10 +38,13 @@ export const TalkBox = styled.div`
   width: 100%;
   padding: 30px;
   overflow: hidden;
-  background-color: PeachPuff;
+  background-color: Black;
+  color: white;
 `;
 
 export const TextBox = styled.div`
+  height: 200px;
+  overflow: auto;
   flex-grow: 1;
   resize: none;
   border: none;
@@ -84,10 +87,13 @@ export const AnswerBox = styled.div`
 `;
 
 export const ChooseBox = styled.div`
+  display: flex;
+  justify-content: center;
   width: 100%;
   border-radius: 10px;
   font-size: 20px;
   padding: 30px;
-  background-color: PeachPuff;
+  background-color: Black;
+  color: white;
   cursor: pointer;
 `;
