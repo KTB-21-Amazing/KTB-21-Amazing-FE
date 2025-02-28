@@ -5,6 +5,7 @@ import enterImg from '../../assets/icons/Enter.svg';
 import { useNavigate } from 'react-router-dom';
 import { getWorld } from '../../api/GameApi';
 import Loading from '../../components/common/Loading/Loding';
+import { useGameContext } from '../../context/GameContent';
 
 const questions = [
   '당신의 이름은?',
@@ -27,6 +28,15 @@ const Userform = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [questionIndex, setQuestionIndex] = useState(0);
   const [isSubmitted, setIsSubmitted] = useState(false); // API 호출을 위한 상태 추가
+  const { setBackgroundImage } = useGameContext();
+
+  useEffect(() => {
+    if (story) {
+      setBackgroundImage(story.image); // 🌟 배경 이미지 저장
+      navigate('/maze');
+    }
+  }, [story, navigate, setBackgroundImage]);
+
 
   useEffect(() => {
     const fetchData = async () => {

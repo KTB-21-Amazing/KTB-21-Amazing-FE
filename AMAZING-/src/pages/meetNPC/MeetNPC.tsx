@@ -5,6 +5,7 @@ import { getQuiz, getQuizResult } from '../../api/GameApi';
 import Loading from '../../components/common/Loading/Loding';
 import x from '../../assets/icons/x.svg';
 import { useNavigate } from 'react-router-dom';
+import { useGameContext } from '../../context/GameContent';
 
 interface QuizDataProps {
   quiz: string;
@@ -25,6 +26,7 @@ const MeetNPC = () => {
   const [selectedAnswer, setSelectedAnswer] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSelected, setIsSelected] = useState(false);
+  const { backgroundImage } = useGameContext();
 
   // 🎯 퀴즈 데이터 가져오기
   useEffect(() => {
@@ -63,7 +65,7 @@ const MeetNPC = () => {
   }, [answer]);
 
   return (
-    <S.Background>
+    <S.Background style={{ backgroundImage: `url(${backgroundImage})` }}>
       {isSelected && (
         <>
           <S.Close onClick={() => navigate('/maze')}>
