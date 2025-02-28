@@ -47,7 +47,7 @@ export const TalkBox = styled.div`
   padding: 20px 50px;
   font-size: 40px;
   overflow: hidden;
-  background-color: Black;
+  background-color: PeachPuff;
 `;
 
 export const InputBox = styled.div`
@@ -57,7 +57,6 @@ export const InputBox = styled.div`
   margin: 0px 20px;
   align-items: center;
   flex: 1;
-  color: white;
 `;
 
 export const nameInput = styled.input`
@@ -74,7 +73,6 @@ export const nextPart = styled.div`
   gap: 15px;
   height: 100%;
   align-items: center;
-  font-color: white;
 `;
 
 export const enterImg = styled.img``;

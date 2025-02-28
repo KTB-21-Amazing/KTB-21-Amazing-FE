@@ -38,8 +38,7 @@ export const TalkBox = styled.div`
   width: 100%;
   padding: 30px;
   overflow: hidden;
-  background-color: Black;
-  color: white;
+  background-color: PeachPuff;
 `;
 
 export const TextBox = styled.div`
@@ -93,7 +92,6 @@ export const ChooseBox = styled.div`
   border-radius: 10px;
   font-size: 20px;
   padding: 30px;
-  background-color: Black;
-  color: white;
+  background-color: PeachPuff;
   cursor: pointer;
 `;
